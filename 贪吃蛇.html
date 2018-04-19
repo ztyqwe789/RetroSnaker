@@ -2,7 +2,7 @@
 <html leng="ex">
 <head>
   <meta charset="UTF-8">
-  <title>贪吃蛇复制</title>  
+  <title>贪吃蛇</title>  
   <style>
     body{
 	width: 100vw;
@@ -31,13 +31,13 @@
   ctx.strokeStyle = "#a0a0a0";
   //新建一条路径
   ctx.beginPath();	
-  //画竖线  
+  //竖线  
   for(var col = 0;col<=cols_num;col++){
     var x = col*grid_width;
 	ctx.moveTo(x,0);
 	ctx.lineTo(x,canvas.height);
   }
-  //划横线
+  //横线
   for(var row = 0;row<=rows_num;row++){
     var y = row*grid_width;
 	ctx.moveTo(0,y);
@@ -54,10 +54,9 @@
   var snake = [41, 40],  //snake队列表示蛇身，
    direction = 1,   //1表示向右，-1表示向左，20表示向下，-20表示向上
    food = 43,    //食物的位置
-   n;     //与下次移动的位置有关,        
+   n;     //与下次移动的位置有关,       
    
  
-  console.log('...............')
   draw(food, "yellow"); 
   //立即执行函数 https://blog.csdn.net/wjnf012/article/details/70157998
   !function() {   
