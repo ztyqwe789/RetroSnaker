@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html leng="ex">
+<head>
+  <meta charset="UTF-8">
+  <title>贪吃蛇复制</title>  
+  <style>
+    body{
+	    width: 100vw;
+    height: 100vh;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+	}
+  </style>
+</head>
+<body>
+<canvas id="can" width="400" height="400" style="background-color:black">对不起,您的浏览器不支持canvas</canvas>
+<script>
+ //获取上下文
+  var canvas = document.getElementById("can");
+  var ctx = canvas.getContext("2d");  
+ //绘制背景
+  <!-- var grd = ctx.createLinearGradient(0,0,0,200); -->
+  <!-- grd.addColorStop(0,"#000");   -->
+  <!-- grd.addColorStop(1,"#fff");   -->
+  <!-- ctx.fillStyle = grd; -->
+  <!-- ctx.fillRect = (0,0,canvas.width,canvas.height);    -->
+ //绘制边框
+  var grid_cols = 20;
+  var grid_rows = 20;
+  var cell_height = canvas.height/grid_rows;
+  var cell_width= canvas.width/grid_cols;
+  ctx.lineWidth = 1;
+  ctx.strokeStyle = "#a0a0a0";
+  //新建一条路径
+  ctx.beginPath();	
+  //画竖线  
+  for(var col = 0;col<=grid_cols;col++){
+    var x = col*cell_width;
+	ctx.moveTo(x,0);
+	ctx.lineTo(x,canvas.height);
+  }
+  //划横线
+  for(var row = 0;row<=grid_rows;row++){
+    var y = row*cell_height;
+	ctx.moveTo(0,y);
+	ctx.lineTo(canvas.width,y);
+  }
+   ctx.stroke();  
+   
+   
+  var snake = [41, 40],  //snake队列表示蛇身，初始节点存在但不显示
+   direction = 1,   //1表示向右，-1表示向左，20表示向下，-20表示向上
+   food = 43,    //食物的位置
+   n;     //与下次移动的位置有关
+         //从0到399表示box里[0~19]*[0~19]的所有节点，每20px一个节点
+
+  function draw(seat, color) {
+   //console.log('draw',seat, color)
+   //console.log('seat % 20',seat % 20,seat % 20 *20 + 1 )
+   ctx.fillStyle = color;
+   ctx.fillRect(seat % 20 *20 + 1, ~~(seat / 20) * 20 + 1, 18, 18);
+   //用color填充一个矩形，以前两个参数为x，y坐标，后两个参数为宽和高。
+   // 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 
+   // 20 ...                                         39
+   // seat % 20:第几行
+   // seat / 20:第几列
+   //例如43,(43%20*20+1,~~(seat/20)*20+1,18,18)
+   //      = (3*20+1,2*20+1,18,18)//第3行,第二列
+   //      = (61,41,18,18)//43格子的左上角坐标,及宽高[-border]
+  }
+//  ~是按位取反运算，~~是取反两次
+// 在这里~~的作用是去掉小数部分
+// 因为位运算的操作值要求是整数，其结果也是整数，所以经过位运算的都会自动变成整数
+  
+  document.onkeydown = function(evt) { 
+         //当键盘上下左右键摁下的时候改变direction
+		 //左上右下[37,38,39,40]
+		 //左上右下[-1,-20,1,20]
+   //console.log('onkeydown',evt)
+   direction = snake[1] - snake[0] == (n = [-1, -20, 1, 20][(evt || event).keyCode - 37] || direction) ? direction : n;
+ //向下为例,sanke[44, 43, 42, 41]
+          // = snake[1] - snake[0] == (n = [-1, -20, 1, 20][3] || direction) ? direction : n;
+          // = snake[1] - snake[0] == (n = 20 || direction) ? direction : n; //若不是上下左右键,则按direction
+		  // = 43 - 44 == 20 ? direction : n; // true表示是向蛇尾方向运动,则按direction;否则n
+		  // 20
+		  // sanke[64,44, 43, 42, 41]
+  };
+  
+
+  !function() {   //立即执行函数 https://blog.csdn.net/wjnf012/article/details/70157998
+   snake.unshift(n = snake[0] + direction);   
+          //此时的n为下次蛇头出现的位置，n进入队列
+		  console.log('...........')
+		  console.log('snake',snake,direction,n)
+   if(snake.indexOf(n, 1) > 0 || n < 0 || n > 399 || direction == 1 && n % 20 == 0 || direction == -1 && n % 20 == 19) {//?
+         //if语句判断贪吃蛇是否撞到自己或者墙壁，碰到时返回，结束程序
+		 //snake.indexOf(n, 1) > 0:snake[0]为蛇头,从索引1开始还存在蛇头,则表示撞到自己了
+		 // n < 0 || n > 399:撞到墙壁了,上边或下边
+		 // direction == 1 && n % 20 == 0:右边
+		 // direction == -1 && n % 20 == 19:左边
+    return alert("GAME OVER!");
+   }
+   draw(n, "lime");  //画出蛇头下次出现的位置
+   if(n == food) {   //如果吃到食物时，产生一个蛇身以外的随机的点，不会去掉蛇尾
+    while (snake.indexOf(food = ~~(Math.random() * 400)) > 0);
+    draw(food, "yellow");
+   } else {    //没有吃到食物时正常移动，蛇尾出队列
+    draw(snake.pop(),"black");
+   }
+   setTimeout(arguments.callee, 150);  
+         //每隔0.15秒执行函数一次，可以调节蛇的速度
+  }();
+   
+   
+   
+</script>
+</body>
+</html>
